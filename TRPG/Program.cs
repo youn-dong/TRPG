@@ -1,5 +1,7 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel;
+using System.Reflection.Metadata.Ecma335;
 using System.Threading;
 
 namespace TRPG
@@ -23,7 +25,7 @@ namespace TRPG
         {
             Program game = new Program(); // Program 인스턴스 생성
             game.StartGame();
-           
+
         }
         void StartGame()
         {
@@ -101,15 +103,12 @@ namespace TRPG
             switch (actions)
             {
                 case 1:
-                    Console.WriteLine("1. 상태 보기로 이동합니다.");
                     PlayerInfomation(character);
                     break;
                 case 2:
-                    Console.WriteLine("2. 인벤토리창으로 이동합니다.");
-                    //인벤토리 함수
+                    GoToInventory(character);
                     break;
                 case 3:
-                    Console.WriteLine("3. 상점으로 이동합니다. ");
                     GoToShop(character);
                     break;
                 default:
@@ -120,7 +119,7 @@ namespace TRPG
         }
         public void PlayerInfomation(Characters character)
         {
-            
+
             Console.Clear();
             Console.WriteLine("상태보기");
             Console.WriteLine("캐릭터의 정보가 표시됩니다.\n");
@@ -134,10 +133,6 @@ namespace TRPG
                 Console.WriteLine($"체력: {character.Health}");
                 Console.WriteLine($"소지금: {character.Gold} \n");
             }
-            else
-            {
-                Console.WriteLine("캐릭터 정보가 존재하지 않습니다.");
-            }    
             Console.WriteLine("0. 나가기 \n");
             Console.WriteLine("원하시는 행동을 입력해주세요. ");
             Console.Write(">>>>> ");
@@ -155,7 +150,6 @@ namespace TRPG
         }
         public void GoToShop(Characters character)
         {
-            
             //상점이동시 시작화면 구현
             Console.Clear();
             Console.WriteLine("상점");
@@ -164,10 +158,18 @@ namespace TRPG
             Console.WriteLine("[보유 골드]");
             Console.WriteLine(character.Gold);
 
-            Console.WriteLine("\n[아이템 목록]"); 
+            Console.WriteLine("\n[아이템 목록]");
+
+            int index = 1;
+
             foreach (var item in Items)
             {
-                Console.WriteLine($"-{item.Name} |  공격력 + {item.Attack}  |  방어력 + {item.Armor}  |  체력 + {item.Health}  |  {item.ItemInfo}  |  {item.Price} G");
+                {
+                    string priceShow = item.isPurchased ? "구매완료" : $"{item.Price} G";
+                    Console.WriteLine($"{index}.{item.Name} |  공격력 + {item.Attack}  |  방어력 + {item.Armor}  |  체력 + {item.Health}  |  {item.ItemInfo}  |  {priceShow}");
+                    index++;
+
+                }
             }
             Console.WriteLine("\n1.아이템 구매 ");
             Console.WriteLine("0.나가기 \n");
@@ -176,17 +178,73 @@ namespace TRPG
             int actions = int.Parse(Console.ReadLine());
             if (actions == 0)
             {
-                SelectingBehaviour(character);
+                Console.Clear();
+                SelectingBehaviour(character); //다시 나가기 로직
             }
-            else
+            else if (actions == 1)
             {
-                Console.WriteLine("숫자를 잘못 입력하셨습니다. 제대로 된 숫자를 입력해주세요.");
-                PlayerInfomation(character);
-                return;
+                Console.WriteLine("구매하고 싶은 장비를 선택해주세요.");
+                int selectedNumber = int.Parse(Console.ReadLine()) - 1; //index는 0부터 시작하기 때문에
+                if (selectedNumber >= 0 && selectedNumber < Items.Count)
+                {
+                    var selectedItem = Items[selectedNumber];
+                    if (selectedItem.isPurchased)
+                    {
+                        Console.WriteLine("이미 구매완료상태입니다.");
+                        Thread.Sleep(1000);
+                        GoToShop(character);
+                    }
+                    else
+                    {
+                        if (character.Gold > selectedItem.Price)
+                        {
+                            character.Gold -= selectedItem.Price;
+                            selectedItem.isPurchased = true;
+                            Console.WriteLine($"{selectedItem.Name}을 구매하셨습니다.");
+                            Thread.Sleep(1000);
+                            GoToShop(character);
+                        }
+                        else
+                        {
+                            Console.WriteLine($"금액이 부족하여 {selectedItem.Name}을 구매하실 수 없습니다.");
+                            Thread.Sleep(1000);
+                            GoToShop(character);
+                        }
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("숫자를 잘못 입력하셨습니다. 제대로 된 숫자를 입력해주세요.");
+                }
             }
         }
-
-       
-
+        public void GoToInventory(Characters characters)
+        {
+            bool isOwnedItem = false; //소유중인 아이템을 bool값을 통해 선언
+            Console.WriteLine("인벤토리");
+            Console.WriteLine("보유 중인 아이템을 관리할 수 있습니다.\n");
+            Console.WriteLine("[아이템 목록\n");
+            foreach (var item in Items)
+            {
+                if(item.isPurchased)
+                {
+                    isOwnedItem = true;
+                    Console.WriteLine($"{item.Name} |  공격력 + {item.Attack}  |  방어력 + {item.Armor}  |  체력 + {item.Health}  |  {item.ItemInfo}");
+                }
+                else
+                {
+                    Console.WriteLine("");
+                }
+            }
+            Console.WriteLine("1.아이템 구매 ");
+            Console.WriteLine("0.나가기 \n");
+            Console.WriteLine("원하시는 행동을 입력해주세요. ");
+            Console.Write(">>>>> ");
+            int actions = int.Parse(Console.ReadLine());
+            if (actions == 0)
+            {
+                SelectingBehaviour(characters); //다시 나가기 로직
+            }
+        }
     }
 }

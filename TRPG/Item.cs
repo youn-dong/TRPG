@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -14,6 +15,7 @@ namespace TRPG
         public float Health { get; set; }
         public float Price { get; set; }
         public string ItemInfo {  get; set; }
+        public bool isPurchased {  get; set; }
         public Item(string name, float attack, float armor, float health, string itemInfo, float price) 
         {
             Name = name;
@@ -22,6 +24,8 @@ namespace TRPG
             Health = health;
             Price = price;
             ItemInfo =  itemInfo;
+            
+            
         }
     }
 }
