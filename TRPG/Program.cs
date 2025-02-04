@@ -5,6 +5,7 @@ namespace TRPG
 {
     internal class Program
     {
+        public float totalArmor;
         public static List<Item> Items = new List<Item>(); //아이템은 List화해서 관리
         public void Description() //아이템설명서 
         {
@@ -93,7 +94,8 @@ namespace TRPG
             Console.WriteLine("1. 상태보기");
             Console.WriteLine("2. 인벤토리");
             Console.WriteLine("3. 상점 ");
-            Console.WriteLine("4. 휴식하기\n");
+            Console.WriteLine("4. 휴식하기");
+            Console.WriteLine("5. 던전입장\n");
             Console.WriteLine("원하시는 행동을 입력해주세요. ");
             Console.Write(">>>>> ");
             int actions = int.Parse(Console.ReadLine());
@@ -111,6 +113,9 @@ namespace TRPG
                     break;
                 case 4:
                     GoToRest(characters);
+                    break;
+                case 5:
+                    // Dungeon.AttemptDungeon();
                     break;
                 default:
                     Console.WriteLine("잘못 입력하셨습니다. 다시 입력해주세요.");
