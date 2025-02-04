@@ -1,11 +1,16 @@
 ﻿using System;
+using System.Numerics;
 using System.Reflection;
+using static TRPG.Dungeon;
 
 namespace TRPG
 {
     internal class Program
     {
-        public float totalArmor;
+
+        public int totalArmor;
+        public int totalAttack;
+        public int totalHealth;
         public static List<Item> Items = new List<Item>(); //아이템은 List화해서 관리
         public void Description() //아이템설명서 
         {
@@ -25,6 +30,7 @@ namespace TRPG
             game.Description(); //상점Main에서는 재귀함수를 통해서 출력하고 있기 때문에
                                 //Description이 한번만 호출될 수 있는 구간을 만들어서 입력
             game.StartGame();
+            
         }
         void StartGame()
         {
@@ -88,6 +94,9 @@ namespace TRPG
         }
         public void SelectingBehaviour(Characters characters) //메인화면 구현
         {
+            Dungeon dungeon = new Dungeon(DungeonType.Easy, 15.0f, this, 1000); //던전 생성
+            Dungeon dungeon1 = new Dungeon(DungeonType.Normal, 25.0f, this, 1700);
+            Dungeon dungeon2 = new Dungeon(DungeonType.Hard, 50.0f, this, 2500);
             Console.Clear();
             Console.WriteLine("스파르타 던전마을에 오신 여러분 환영합니다.");
             Console.WriteLine("이곳에서 던전으로 들어가기전 활동을 할 수 있습니다. \n");
@@ -115,7 +124,8 @@ namespace TRPG
                     GoToRest(characters);
                     break;
                 case 5:
-                    // Dungeon.AttemptDungeon();
+                    GoToDungeon(characters);
+                    
                     break;
                 default:
                     Console.WriteLine("잘못 입력하셨습니다. 다시 입력해주세요.");
@@ -452,5 +462,75 @@ namespace TRPG
                 GoToRest(characters);
             }
         }
+        public void GoToDungeon(Characters characters)
+        {
+            Dungeon easyDungeon = new Dungeon(DungeonType.Easy, 15.0f, this, 1000); //던전객체 생성
+            Dungeon normalDungeon = new Dungeon(DungeonType.Normal, 25.0f, this, 1700);
+            Dungeon HardDungeon = new Dungeon(DungeonType.Hard, 50.0f, this, 2500);
+            Console.WriteLine("던전입장");
+            Console.WriteLine("이곳에서 던전으로 들어가기 전 활동을 할 수 있습니다.");
+            Console.WriteLine("\n1.이지모드 던전   | 방어력 15 이상 권장");
+            Console.WriteLine("2.노말모드 던전   | 방어력 25 이상 권장");
+            Console.WriteLine("3.하드모드 던전   | 방어력 50 이상 권장");
+            Console.WriteLine("\n0.나가기\n");
+            Console.WriteLine("원하시는 행동을 입력해주세요 ");
+            Console.Write(">>>>> ");
+            int actions = int.Parse(Console.ReadLine());
+            switch (actions)
+            {
+                case 0:
+                    SelectingBehaviour(characters);
+                    break;
+                case 1:
+                    Console.WriteLine($"Easy모드에 도전합니다.");
+                    easyDungeon.AttemptDungeon();
+                    Console.WriteLine("\n0.나가기\n");
+                    Console.WriteLine("원하시는 행동을 입력해주세요 ");
+                    Console.Write(">>>>> ");
+                    int easyNumbers = int.Parse(Console.ReadLine());
+                    if (easyNumbers == 0)
+                    {
+                        SelectingBehaviour(characters);
+                    }
+                    else
+                    {
+                        SelectingBehaviour(characters);
+                    }
+                    break;
+                case 2:
+                    Console.WriteLine("Normal모드에 도전합니다.");
+                    normalDungeon.AttemptDungeon();
+                    Console.WriteLine("\n0.나가기\n");
+                    Console.WriteLine("원하시는 행동을 입력해주세요 ");
+                    Console.Write(">>>>> ");
+                    int  normalNumbers= int.Parse(Console.ReadLine());
+                    if (normalNumbers == 0)
+                    {
+                        SelectingBehaviour(characters);
+                    }
+                    else
+                    {
+                        SelectingBehaviour(characters);
+                    }
+                    break;
+                case 3:
+                    Console.WriteLine("Hard모드에 도전합니다.");
+                    HardDungeon.AttemptDungeon();
+                    Console.WriteLine("\n0.나가기\n");
+                    Console.WriteLine("원하시는 행동을 입력해주세요 ");
+                    Console.Write(">>>>> ");
+                    int hardNumbers = int.Parse(Console.ReadLine());
+                    if (hardNumbers == 0)
+                    {
+                        SelectingBehaviour(characters);
+                    }
+                    else
+                    {
+                        SelectingBehaviour(characters);
+                    }
+                    break;
+            }
+        }
+
     }
 }
