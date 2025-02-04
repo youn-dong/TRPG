@@ -9,6 +9,8 @@ namespace TRPG
 {
     internal class Item
     {
+        public int Id { get; set; }  // 아이템을 판매 구매 방식에 있어 index오류로 인해
+                                     // 고유한 ID를 부여하여 판매하는 방식
         public string Name {  get; set; }
         public float Armor {  get; set; }
         public float Attack { get; set; }
@@ -18,6 +20,7 @@ namespace TRPG
         public string ItemInfo {  get; set; }
         public bool isPurchased {  get; set; }
         public bool isEquipped { get; set; }
+
         public Item(string name, float attack, float armor, float health, string itemInfo, float price) 
         {
             Name = name;
@@ -26,7 +29,7 @@ namespace TRPG
             Health = health;
             Price = price;
             ItemInfo =  itemInfo;
-            SellPrice = price * 0.8f;
+            SellPrice = price * 0.85f;
         }
  
     }

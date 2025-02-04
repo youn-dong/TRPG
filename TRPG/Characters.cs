@@ -45,6 +45,7 @@ namespace TRPG
         {
             return new Characters(name, job);  
         }
+       
 
     }
 }

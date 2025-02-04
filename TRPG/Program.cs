@@ -1,9 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.Reflection.Metadata.Ecma335;
-using System.Threading;
+using System.Reflection;
 
 namespace TRPG
 {
@@ -72,7 +68,7 @@ namespace TRPG
             Console.Write(">>>>> ");
             Characters characters = null;
             int jobChoice = int.Parse(Console.ReadLine());
-            switch (jobChoice) 
+            switch (jobChoice)
             {
                 case 1:
                     characters = Characters.CreateCharacters(name, Characters.jobType.전사); // 전사
@@ -145,7 +141,7 @@ namespace TRPG
                 Console.WriteLine($"Lv. {characters.Level}");
                 Console.WriteLine($"이름: {characters.Name} ({characters.Job})");
                 Console.WriteLine($"공격력: {characters.Attack} (+{totalAttack})");    //포함된 아이템의 스텟도 같이 명시
-                Console.WriteLine($"방어력: {characters.Armor} (+{totalArmor})");            
+                Console.WriteLine($"방어력: {characters.Armor} (+{totalArmor})");
                 Console.WriteLine($"체력: {characters.Health} (+{totalHealth})");
                 Console.WriteLine($"소지금: {characters.Gold} \n");
             }
@@ -179,12 +175,11 @@ namespace TRPG
             int index = 1;
             foreach (var item in Items)
             {
-                {
-                    string priceShow = item.isPurchased ? "구매완료" : $"{item.Price} G";
-                    Console.WriteLine($"{index}.{item.Name} |  공격력 + {item.Attack}  |  방어력 + {item.Armor}  |  체력 + {item.Health}  |  {item.ItemInfo}  |  {priceShow}");
-                    index++;
 
-                }
+                string priceShow = item.isPurchased ? "구매완료" : $"{item.Price} G";
+                Console.WriteLine($"{index}.{item.Name} |  공격력 + {item.Attack}  |  방어력 + {item.Armor}  |  체력 + {item.Health}  |  {item.ItemInfo}  |  {priceShow}");
+                index++;
+
             }
             Console.WriteLine("\n1.아이템 구매 ");
             Console.WriteLine("2.아이템 판매");
@@ -206,8 +201,8 @@ namespace TRPG
                     var selectedItem = Items[selectedNumber];
                     if (selectedItem.isPurchased)
                     {
-                        Console.WriteLine("이미 구매완료상태입니다.");
-                        Thread.Sleep(1000);
+                        Console.WriteLine("이미 구매하신 아이템입니다.");
+                        Thread.Sleep(500);
                         GoToShop(characters);
                     }
                     else
@@ -217,21 +212,67 @@ namespace TRPG
                             characters.Gold -= selectedItem.Price;
                             selectedItem.isPurchased = true;
                             Console.WriteLine($"{selectedItem.Name}을 구매하셨습니다.");
-                            Thread.Sleep(1000);
+                            Thread.Sleep(500);
                             GoToShop(characters);
+
                         }
                         else
                         {
                             Console.WriteLine($"금액이 부족하여 {selectedItem.Name}을 구매하실 수 없습니다.");
-                            Thread.Sleep(1000);
+                            Thread.Sleep(500);
                             GoToShop(characters);
                         }
                     }
                 }
+                else
+                {
+                    Console.WriteLine("잘못된 번호입니다.");
+                    Thread.Sleep(1000);
+                    GoToShop(characters); // 상점 재진입
+                }
             }
-            else if (actions == 2)  
+            else if (actions == 2)
             {
-                Console.WriteLine("판매하고 싶은 아이템을 입력해주세요.");
+                Console.Clear();
+                Console.WriteLine("상점-아이템");
+                Console.WriteLine("필요한 아이템을 얻을 수 있는 상점입니다.\n");
+                index = 1;
+
+                for (int i = 0; i < Items.Count; i++)
+                {
+                    var item = Items[i];
+                    if (item.isPurchased) //보유중인 아이템을 확인, 목록에 출력
+                    {
+
+                        Console.WriteLine($"{index}.{item.Name} |  공격력 + {item.Attack}  |  방어력 + {item.Armor}  |  체력 + {item.Health}  |  {item.ItemInfo}  |  {item.Price}");
+                        index++;
+                    }
+                }
+                Console.WriteLine("0.나가기 \n");
+                Console.WriteLine("판매를 원하시는 아이템을 입력하거나 0번을 눌러 나갈 수 있습니다.");
+                Console.Write(">>>>> ");
+                int selectedNumber = int.Parse(Console.ReadLine()) - 1; //index는 0부터 시작하기 때문에
+                if (selectedNumber >= 0 && selectedNumber < Items.Count)
+                {
+                    var selectedItem = Items[selectedNumber];
+                    if (selectedItem.isPurchased)
+                    {
+                        characters.Gold += selectedItem.SellPrice;
+                        selectedItem.isPurchased = false;
+                        selectedItem.isEquipped = false;
+                        Items.RemoveAt(selectedNumber);  //판매하더라도 index가 계속 남아있었지만
+                                                         //판매된 아이템의 index까지 제거하여 다시 index를 정렬해서 다시 판매창으로 
+                        Console.WriteLine($"{selectedItem.Name}을 판매하여 {selectedItem.SellPrice} G만큼 획득했습니다.");
+                        Thread.Sleep(1000);
+                        GoToShop(characters);
+                    }
+                    else
+                    {
+                        Console.WriteLine("보유 중인 아이템이 아닙니다.");
+                        Thread.Sleep(1000);
+                        GoToShop(characters);
+                    }
+                }
             }
             else
             {
@@ -258,7 +299,7 @@ namespace TRPG
             }
             if (!isOwnedItem)
             {
-                Console.WriteLine("아이템을 보유하고 있지 않습니다.");
+                Console.WriteLine("\n아이템을 보유하고 있지 않습니다.");
             }
 
             Console.WriteLine("1.장착 관리 ");
