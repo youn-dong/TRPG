@@ -14,8 +14,10 @@ namespace TRPG
         public float Attack { get; set; }
         public float Health { get; set; }
         public float Price { get; set; }
+        public float SellPrice { get; set; } 
         public string ItemInfo {  get; set; }
         public bool isPurchased {  get; set; }
+        public bool isEquipped { get; set; }
         public Item(string name, float attack, float armor, float health, string itemInfo, float price) 
         {
             Name = name;
@@ -24,8 +26,8 @@ namespace TRPG
             Health = health;
             Price = price;
             ItemInfo =  itemInfo;
-            
-            
+            SellPrice = price * 0.8f;
         }
+ 
     }
 }

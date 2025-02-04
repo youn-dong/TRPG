@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.ComponentModel.Design;
 using System.Reflection.Metadata.Ecma335;
 using System.Threading;
 
@@ -8,8 +9,8 @@ namespace TRPG
 {
     internal class Program
     {
-        public static List<Item> Items = new List<Item>();
-        public void Description()
+        public static List<Item> Items = new List<Item>(); //아이템은 List화해서 관리
+        public void Description() //아이템설명서 
         {
             Items.Add(new Item("수련자갑옷", 0, 5, 50, "수련에 도움을 주는 갑옷입니다.", 200));
             Items.Add(new Item("무쇠갑옷", 0, 10, 100, "무쇠로 만들어져 튼튼한 갑옷입니다.", 400));
@@ -24,8 +25,9 @@ namespace TRPG
         static void Main(string[] args)
         {
             Program game = new Program(); // Program 인스턴스 생성
+            game.Description(); //상점Main에서는 재귀함수를 통해서 출력하고 있기 때문에
+                                //Description이 한번만 호출될 수 있는 구간을 만들어서 입력
             game.StartGame();
-
         }
         void StartGame()
         {
@@ -61,77 +63,91 @@ namespace TRPG
                 }
             }
         }
-        public void SelectJob(string name)
+        public void SelectJob(string name) //Character메서드를 통해서 switch문을 통해 
         {
             Console.WriteLine("원하는 직업을 선택하세요. \n");
             Console.WriteLine("1. 전사 (Warrior) ");
             Console.WriteLine("2. 궁수 (Archor) ");
             Console.WriteLine("3. 마법사 (Magician)\n ");
             Console.Write(">>>>> ");
-            Characters character = null;
+            Characters characters = null;
             int jobChoice = int.Parse(Console.ReadLine());
-            switch (jobChoice)
+            switch (jobChoice) 
             {
                 case 1:
-                    character = Characters.CreateCharacter(name, Characters.jobType.전사); // 전사
+                    characters = Characters.CreateCharacters(name, Characters.jobType.전사); // 전사
                     break;
                 case 2:
-                    character = Characters.CreateCharacter(name, Characters.jobType.궁수); // 궁수
+                    characters = Characters.CreateCharacters(name, Characters.jobType.궁수); // 궁수
                     break;
                 case 3:
-                    character = Characters.CreateCharacter(name, Characters.jobType.마법사); // 마법사
+                    characters = Characters.CreateCharacters(name, Characters.jobType.마법사); // 마법사
                     break;
                 default:
                     Console.WriteLine("잘못된 선택입니다.");
                     return;
             }
-            SelectingBehaviour(character);
+            SelectingBehaviour(characters);
         }
-        public void SelectingBehaviour(Characters character)
+        public void SelectingBehaviour(Characters characters) //메인화면 구현
         {
             Console.Clear();
             Console.WriteLine("스파르타 던전마을에 오신 여러분 환영합니다.");
             Console.WriteLine("이곳에서 던전으로 들어가기전 활동을 할 수 있습니다. \n");
             Console.WriteLine("1. 상태보기");
             Console.WriteLine("2. 인벤토리");
-            Console.WriteLine("3. 상점 \n");
+            Console.WriteLine("3. 상점 ");
+            Console.WriteLine("4. 휴식하기\n");
             Console.WriteLine("원하시는 행동을 입력해주세요. ");
             Console.Write(">>>>> ");
             int actions = int.Parse(Console.ReadLine());
             Console.Clear();
-            Description();
             switch (actions)
             {
                 case 1:
-                    PlayerInfomation(character);
+                    PlayerInfomation(characters);
                     break;
                 case 2:
-                    GoToInventory(character);
+                    GoToInventory(characters);
                     break;
                 case 3:
-                    GoToShop(character);
+                    GoToShop(characters);
+                    break;
+                case 4:
+                    GoToRest(characters);
                     break;
                 default:
                     Console.WriteLine("잘못 입력하셨습니다. 다시 입력해주세요.");
-                    SelectingBehaviour(character);
+                    SelectingBehaviour(characters);
                     return;
             }
         }
-        public void PlayerInfomation(Characters character)
+        public void PlayerInfomation(Characters characters)
         {
-
+            float totalAttack = 0; //아이템의 스텟을 상태보기에 업데이트 하기위해서 착용한 아이템의 전체 공격력
+            float totalHealth = 0; //아이템의 스텟을 상태보기에 업데이트 하기위해서 착용한 아이템의 전체 체력
+            float totalArmor = 0;  //아이템의 스텟을 상태보기에 업데이트 하기위해서 착용한 아이템의 전체 방어력
+            foreach (var item in Items)
+            {
+                if (item.isEquipped)  //foreach문을 통해서 item리스트 중 착용된 장비만 각종 스텟에 포함되도록
+                {
+                    totalAttack += item.Attack;
+                    totalHealth += item.Health;
+                    totalArmor += item.Armor;
+                }
+            }
             Console.Clear();
             Console.WriteLine("상태보기");
             Console.WriteLine("캐릭터의 정보가 표시됩니다.\n");
 
-            if (character != null)
+            if (characters != null)
             {
-                Console.WriteLine($"Lv. {character.Level}");
-                Console.WriteLine($"이름: {character.Name} ({character.Job})");
-                Console.WriteLine($"공격력: {character.Attack}");
-                Console.WriteLine($"방어력: {character.Armor}");
-                Console.WriteLine($"체력: {character.Health}");
-                Console.WriteLine($"소지금: {character.Gold} \n");
+                Console.WriteLine($"Lv. {characters.Level}");
+                Console.WriteLine($"이름: {characters.Name} ({characters.Job})");
+                Console.WriteLine($"공격력: {characters.Attack} (+{totalAttack})");    //포함된 아이템의 스텟도 같이 명시
+                Console.WriteLine($"방어력: {characters.Armor} (+{totalArmor})");            
+                Console.WriteLine($"체력: {characters.Health} (+{totalHealth})");
+                Console.WriteLine($"소지금: {characters.Gold} \n");
             }
             Console.WriteLine("0. 나가기 \n");
             Console.WriteLine("원하시는 행동을 입력해주세요. ");
@@ -139,16 +155,16 @@ namespace TRPG
             int actions = int.Parse(Console.ReadLine());
             if (actions == 0)
             {
-                SelectingBehaviour(character);
+                SelectingBehaviour(characters);
             }
             else
             {
                 Console.WriteLine("숫자를 잘못 입력하셨습니다. 제대로 된 숫자를 입력해주세요.");
-                PlayerInfomation(character);
+                PlayerInfomation(characters);
                 return;
             }
         }
-        public void GoToShop(Characters character)
+        public void GoToShop(Characters characters)
         {
             //상점이동시 시작화면 구현
             Console.Clear();
@@ -156,12 +172,11 @@ namespace TRPG
             Console.WriteLine("필요한 아이템을 얻을 수 있는 상점입니다.\n");
 
             Console.WriteLine("[보유 골드]");
-            Console.WriteLine(character.Gold);
+            Console.WriteLine(characters.Gold);
 
             Console.WriteLine("\n[아이템 목록]");
 
             int index = 1;
-
             foreach (var item in Items)
             {
                 {
@@ -172,6 +187,7 @@ namespace TRPG
                 }
             }
             Console.WriteLine("\n1.아이템 구매 ");
+            Console.WriteLine("2.아이템 판매");
             Console.WriteLine("0.나가기 \n");
             Console.WriteLine("원하시는 행동을 입력해주세요. ");
             Console.Write(">>>>> ");
@@ -179,7 +195,7 @@ namespace TRPG
             if (actions == 0)
             {
                 Console.Clear();
-                SelectingBehaviour(character); //다시 나가기 로직
+                SelectingBehaviour(characters); //다시 나가기 로직
             }
             else if (actions == 1)
             {
@@ -192,51 +208,60 @@ namespace TRPG
                     {
                         Console.WriteLine("이미 구매완료상태입니다.");
                         Thread.Sleep(1000);
-                        GoToShop(character);
+                        GoToShop(characters);
                     }
                     else
                     {
-                        if (character.Gold > selectedItem.Price)
+                        if (characters.Gold > selectedItem.Price)
                         {
-                            character.Gold -= selectedItem.Price;
+                            characters.Gold -= selectedItem.Price;
                             selectedItem.isPurchased = true;
                             Console.WriteLine($"{selectedItem.Name}을 구매하셨습니다.");
                             Thread.Sleep(1000);
-                            GoToShop(character);
+                            GoToShop(characters);
                         }
                         else
                         {
                             Console.WriteLine($"금액이 부족하여 {selectedItem.Name}을 구매하실 수 없습니다.");
                             Thread.Sleep(1000);
-                            GoToShop(character);
+                            GoToShop(characters);
                         }
                     }
                 }
-                else
-                {
-                    Console.WriteLine("숫자를 잘못 입력하셨습니다. 제대로 된 숫자를 입력해주세요.");
-                }
+            }
+            else if (actions == 2)  
+            {
+                Console.WriteLine("판매하고 싶은 아이템을 입력해주세요.");
+            }
+            else
+            {
+                Console.WriteLine("숫자를 잘못 입력하셨습니다. 제대로 된 숫자를 입력해주세요.");
+                Thread.Sleep(1000);
+                GoToShop(characters);
             }
         }
         public void GoToInventory(Characters characters)
         {
             bool isOwnedItem = false; //소유중인 아이템을 bool값을 통해 선언
+            Console.Clear();
             Console.WriteLine("인벤토리");
             Console.WriteLine("보유 중인 아이템을 관리할 수 있습니다.\n");
-            Console.WriteLine("[아이템 목록\n");
+            Console.WriteLine("[아이템 목록]\n");
             foreach (var item in Items)
             {
-                if(item.isPurchased)
+                if (item.isPurchased)
                 {
                     isOwnedItem = true;
-                    Console.WriteLine($"{item.Name} |  공격력 + {item.Attack}  |  방어력 + {item.Armor}  |  체력 + {item.Health}  |  {item.ItemInfo}");
-                }
-                else
-                {
-                    Console.WriteLine("");
+                    string equippedMark = item.isEquipped ? "[E]" : "";
+                    Console.WriteLine($"{equippedMark}{item.Name} |  공격력 + {item.Attack}  |  방어력 + {item.Armor}  |  체력 + {item.Health}  |  {item.ItemInfo}");
                 }
             }
-            Console.WriteLine("1.아이템 구매 ");
+            if (!isOwnedItem)
+            {
+                Console.WriteLine("아이템을 보유하고 있지 않습니다.");
+            }
+
+            Console.WriteLine("1.장착 관리 ");
             Console.WriteLine("0.나가기 \n");
             Console.WriteLine("원하시는 행동을 입력해주세요. ");
             Console.Write(">>>>> ");
@@ -244,6 +269,141 @@ namespace TRPG
             if (actions == 0)
             {
                 SelectingBehaviour(characters); //다시 나가기 로직
+                return;
+            }
+            else if (actions == 1)
+            {
+                ManageEquipment(characters);
+            }
+            else
+            {
+                Console.WriteLine("잘못된 입력입니다.");
+                Thread.Sleep(500);
+                GoToInventory(characters);
+            }
+        }
+        public void ManageEquipment(Characters characters) //아이템 장착 구현하기
+        {
+            Console.Clear();
+            Console.WriteLine("장착 관리");
+            Console.WriteLine("보유 중인 아이템을 관리할 수 있습니다.");
+            Console.WriteLine("\n[아이템 목록]");
+            int index = 1;
+            foreach (var item in Items)
+            {
+                if (item.isPurchased)  // 구매한 아이템만 출력
+                {
+                    string equippedMark = item.isEquipped ? "[E]" : "";  // 장착된 아이템은 [E] 표시
+                    Console.WriteLine($"{index}. {equippedMark}{item.Name} | 공격력 + {item.Attack} | 방어력 + {item.Armor} | 체력 + {item.Health} | {item.ItemInfo}");
+                    index++;
+                }
+            }
+            Console.WriteLine("\n0.나가기.");
+            Console.WriteLine("\n장착하고 싶은 아이템을 입력해주세요.\n");
+            Console.WriteLine("원하시는 행동을 입력해주세요 ");
+            Console.Write(">>>>> ");
+            int selectedNumber = int.Parse(Console.ReadLine());
+            if (selectedNumber == 0)
+            {
+                SelectingBehaviour(characters);
+            }
+            else if (selectedNumber > 0 && selectedNumber <= Items.Count)
+            {
+                var selectedItem = Items[selectedNumber - 1]; //index번호는 0부터 시작하므로
+                                                              //내가 선택한 번호에서 -1을 하면 원하는 아이템과 index넘버 일치
+
+                if (selectedItem.isPurchased) // 먼저 구매된 아이템만 장착할 수 있도록
+                {
+                    if (selectedItem.isEquipped) //장착 로직 구현
+                    {
+                        selectedItem.isEquipped = false;
+                        Console.WriteLine($"{selectedItem.Name}장착을 해제하였습니다.");
+                        characters.maxHealth -= selectedItem.Health;
+                        Thread.Sleep(500);
+                        GoToInventory(characters);
+                    }
+                    else
+                    {
+                        selectedItem.isEquipped = true;
+                        Console.WriteLine($"{selectedItem.Name}을 장착하였습니다.");
+                        characters.maxHealth += selectedItem.Health;
+                        Thread.Sleep(500);
+                        GoToInventory(characters);
+                    }
+                }
+                else
+                {
+                    Console.WriteLine("구매하지 않은 아이템은 장착할 수 없습니다.");
+                    Thread.Sleep(500);
+                    GoToInventory(characters);
+                }
+            }
+            else
+            {
+                Console.WriteLine("잘못된 입력입니다. 다시 입력해주세요");
+                Thread.Sleep(500);
+                ManageEquipment(characters);
+            }
+        }
+        public void GoToRest(Characters characters) //휴식하기 기능 구현하기
+        {
+            int recoverGold = 500;  //휴식시 필요한 Gold양
+            int recoverHealth = 100; //휴식시 회복되는 체력의 양
+            Console.Clear();
+            Console.WriteLine("휴식하기");
+            Console.WriteLine($"휴식을 선택하면 {recoverGold}G로 체력을 회복합니다");
+            Console.WriteLine($"휴식시 체력은 {recoverHealth}이 회복됩니다.");
+            Console.WriteLine($"현재 보유Gold : {characters.Gold} ");
+            Console.WriteLine("\n1.휴식하기");
+            Console.WriteLine("0.나가기\n");
+            Console.WriteLine("원하시는 행동을 입력해주세요 ");
+            Console.Write(">>>>> ");
+            int actions = int.Parse(Console.ReadLine());  //휴식시 할 수 있는 행동화
+            if (actions == 0)
+            {
+                SelectingBehaviour(characters); //다시 나가기 로직
+                return;
+            }
+            else if (actions == 1)  // 휴식버튼 클릭시 현재체력이 최대체력일 때 골드가 차감되지 않고 휴식되지 않기
+                                    // 휴식버튼 클릭시 현재체력만큼 체력이 회복되고 골드가 차감되도록
+                                    // 
+            {
+                if (characters.Health + recoverHealth >= characters.maxHealth) //최대체력을 만들기위한 변수 maxHealth가져오기
+                {
+                    Console.WriteLine("현재 체력이 최대체력이므로 휴식할 수 없습니다.");
+                    Thread.Sleep(500);
+                    GoToRest(characters);
+                }
+                if (characters.Gold < recoverGold)
+                {
+                    Console.WriteLine("Gold가 부족하여 휴식할 수 없습니다. Gold를 획득 후 다시 방문해주세요.");
+                    Thread.Sleep(500);
+                    GoToRest(characters);
+                }
+                if (characters.Gold >= recoverGold)
+                {
+                    characters.Gold -= 500;
+                    if (characters.Health + recoverHealth > characters.maxHealth)
+                    {
+                        characters.Health = characters.maxHealth;
+                        Console.WriteLine($"휴식하여 {characters.maxHealth}만큼 회복되었습니다.");
+                        Thread.Sleep(500);
+                        GoToRest(characters);
+                    }
+                    else
+                    {
+                        characters.Health = characters.Health + 100;
+                        Console.WriteLine($"휴식하여 {recoverHealth}만큼 체력이 회복되었습니다.");
+                        Thread.Sleep(500);
+                        GoToRest(characters);
+                    }
+                }
+            }
+            else
+            {
+                Console.WriteLine("잘못된 숫자를 입력하셨습니다. 다시 입력해주세요.");
+                Thread.Sleep(500);
+                GoToRest(characters);
             }
         }
     }
