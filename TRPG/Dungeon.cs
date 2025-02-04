@@ -17,7 +17,6 @@ namespace TRPG
         private Characters character;
         public DungeonType type { get; set; }
         public float RecommendedArmor { get; set; }
-
         public float ClearReward { get; set; }
 
 
@@ -50,7 +49,7 @@ namespace TRPG
                                              //그중 40퍼센트로 맞추기 위함.
                 {
                     Console.WriteLine("던전 클리어 실패ㅠㅠ 체력이 절반으로 감소합니다.");
-                    character.Health -= (character.Health / 2); 
+                    character.Health -= (character.maxHealth / 2); 
                 }
                 else
                 {
@@ -63,6 +62,7 @@ namespace TRPG
         }
         public void ClearDungeon()
         {
+            Console.Clear();
             Console.WriteLine("던전 클리어");
             Random random = new Random();  //클리어시 감소되는 체력 계산하기 20~35 기본 감소 랜덤값
             int ArmorDifference = (int)(character.Armor - RecommendedArmor); // 유저방어력에 따른 체력감소값 정하기
@@ -73,14 +73,18 @@ namespace TRPG
                                                                         //플레이어 최대데미지까지 랜덤으로 결정
             character.Health -= damage;
 
-            Console.WriteLine($"{type}던전을 클리어하셨습니다. 축하드립니다. 추가 보상과 함께 {damage}만큼 체력이 감소됩니다.");
-
+            Console.WriteLine("축하드립니다.");
+            Console.WriteLine($"{type}던전을 클리어하셨습니다.");
+            Console.WriteLine("\n[탐험 결과]");
+            Console.Write($"체력 {character.Health} -> ");
+            character.Health -= damage;
+            Console.WriteLine($" {character.Health} ");
             int clearRewardPercentage = random.Next(1,101);
             int additionalReward = (int)(ClearReward * (character.Attack * 2 / 100));
             int totalReward = (int)ClearReward + additionalReward;
-            Console.WriteLine($"던전 클리어 보상 : {totalReward}");
+            Console.Write($"Gold {character.Gold} G ->");
             character.Gold += totalReward;
+            Console.WriteLine($" {character.Gold} G");
         }
     }
-
 }
