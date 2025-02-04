@@ -7,7 +7,7 @@ namespace TRPG
 {
     internal class Program
     {
-
+        
         public int totalArmor;
         public int totalAttack;
         public int totalHealth;
@@ -94,9 +94,9 @@ namespace TRPG
         }
         public void SelectingBehaviour(Characters characters) //메인화면 구현
         {
-            Dungeon dungeon = new Dungeon(DungeonType.Easy, 15.0f, this, 1000); //던전 생성
-            Dungeon dungeon1 = new Dungeon(DungeonType.Normal, 25.0f, this, 1700);
-            Dungeon dungeon2 = new Dungeon(DungeonType.Hard, 50.0f, this, 2500);
+            Dungeon dungeon = new Dungeon(DungeonType.Easy, 15.0f, characters, 1000); //던전 생성
+            Dungeon dungeon1 = new Dungeon(DungeonType.Normal, 25.0f,characters, 1700);
+            Dungeon dungeon2 = new Dungeon(DungeonType.Hard, 50.0f,characters, 2500);
             Console.Clear();
             Console.WriteLine("스파르타 던전마을에 오신 여러분 환영합니다.");
             Console.WriteLine("이곳에서 던전으로 들어가기전 활동을 할 수 있습니다. \n");
@@ -224,7 +224,7 @@ namespace TRPG
                     {
                         if (characters.Gold > selectedItem.Price)
                         {
-                            characters.Gold -= selectedItem.Price;
+                            characters.Gold -= (int)selectedItem.Price;
                             selectedItem.isPurchased = true;
                             Console.WriteLine($"{selectedItem.Name}을 구매하셨습니다.");
                             Thread.Sleep(500);
@@ -272,7 +272,7 @@ namespace TRPG
                     var selectedItem = Items[selectedNumber];
                     if (selectedItem.isPurchased)
                     {
-                        characters.Gold += selectedItem.SellPrice;
+                        characters.Gold += (int)selectedItem.SellPrice;
                         selectedItem.isPurchased = false;
                         selectedItem.isEquipped = false;
                         Items.RemoveAt(selectedNumber);  //판매하더라도 index가 계속 남아있었지만
@@ -464,9 +464,9 @@ namespace TRPG
         }
         public void GoToDungeon(Characters characters)
         {
-            Dungeon easyDungeon = new Dungeon(DungeonType.Easy, 15.0f, this, 1000); //던전객체 생성
-            Dungeon normalDungeon = new Dungeon(DungeonType.Normal, 25.0f, this, 1700);
-            Dungeon HardDungeon = new Dungeon(DungeonType.Hard, 50.0f, this, 2500);
+            Dungeon easyDungeon = new Dungeon(DungeonType.Easy, 15.0f,  characters, 1000); //던전객체 생성
+            Dungeon normalDungeon = new Dungeon(DungeonType.Normal, 25.0f,  characters, 1700);
+            Dungeon HardDungeon = new Dungeon(DungeonType.Hard, 50.0f, characters, 2500);
             Console.WriteLine("던전입장");
             Console.WriteLine("이곳에서 던전으로 들어가기 전 활동을 할 수 있습니다.");
             Console.WriteLine("\n1.이지모드 던전   | 방어력 15 이상 권장");
