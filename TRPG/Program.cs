@@ -1,13 +1,10 @@
 ﻿using System;
-using System.Numerics;
-using System.Reflection;
 using static TRPG.Dungeon;
 
 namespace TRPG
 {
     internal class Program
     {
-        
         public int totalArmor;
         public int totalAttack;
         public int totalHealth;
@@ -29,8 +26,7 @@ namespace TRPG
             Program game = new Program(); // Program 인스턴스 생성
             game.Description(); //상점Main에서는 재귀함수를 통해서 출력하고 있기 때문에
                                 //Description이 한번만 호출될 수 있는 구간을 만들어서 입력
-            game.StartGame();
-            
+            game.StartGame(); 
         }
         void StartGame()
         {
@@ -94,9 +90,9 @@ namespace TRPG
         }
         public void SelectingBehaviour(Characters characters) //메인화면 구현
         {
-            Dungeon dungeon = new Dungeon(DungeonType.Easy, 15.0f, characters, 1000); //던전 생성
-            Dungeon dungeon1 = new Dungeon(DungeonType.Normal, 25.0f,characters, 1700);
-            Dungeon dungeon2 = new Dungeon(DungeonType.Hard, 50.0f,characters, 2500);
+            Dungeon dungeon = new Dungeon(DungeonType.Easy, 15, characters, 1000); //던전 생성
+            Dungeon dungeon1 = new Dungeon(DungeonType.Normal, 25,characters, 1700);
+            Dungeon dungeon2 = new Dungeon(DungeonType.Hard, 50,characters, 2500);
             Console.Clear();
             Console.WriteLine("스파르타 던전마을에 오신 여러분 환영합니다.");
             Console.WriteLine("이곳에서 던전으로 들어가기전 활동을 할 수 있습니다. \n");
@@ -147,10 +143,10 @@ namespace TRPG
                     totalArmor += item.Armor;
                 }
             }
+           
             Console.Clear();
             Console.WriteLine("상태보기");
             Console.WriteLine("캐릭터의 정보가 표시됩니다.\n");
-
             if (characters != null)
             {
                 Console.WriteLine($"Lv. {characters.Level}");
@@ -174,6 +170,7 @@ namespace TRPG
                 PlayerInfomation(characters);
                 return;
             }
+            
         }
         public void GoToShop(Characters characters)
         {
@@ -375,6 +372,9 @@ namespace TRPG
                         selectedItem.isEquipped = false;
                         Console.WriteLine($"{selectedItem.Name}장착을 해제하였습니다.");
                         characters.maxHealth -= selectedItem.Health;
+                        characters.Attack -= (int)selectedItem.Attack;
+                        characters.Health -= (int)selectedItem.Health;
+                        characters.Armor -= (int)selectedItem.Armor;
                         Thread.Sleep(500);
                         GoToInventory(characters);
                     }
@@ -383,6 +383,9 @@ namespace TRPG
                         selectedItem.isEquipped = true;
                         Console.WriteLine($"{selectedItem.Name}을 장착하였습니다.");
                         characters.maxHealth += selectedItem.Health;
+                        characters.Attack += (int)selectedItem.Attack;
+                        characters.Health += (int)selectedItem.Health;
+                        characters.Armor += (int)selectedItem.Armor;
                         Thread.Sleep(500);
                         GoToInventory(characters);
                     }
@@ -424,6 +427,7 @@ namespace TRPG
                                     // 휴식버튼 클릭시 현재체력만큼 체력이 회복되고 골드가 차감되도록
                                     // 
             {
+                   characters.maxHealth = characters.Health + totalHealth;
                 if (characters.Health + recoverHealth >= characters.maxHealth) //최대체력을 만들기위한 변수 maxHealth가져오기
                 {
                     Console.WriteLine("현재 체력이 최대체력이므로 휴식할 수 없습니다.");
@@ -439,7 +443,7 @@ namespace TRPG
                 if (characters.Gold >= recoverGold)
                 {
                     characters.Gold -= 500;
-                    if (characters.Health + recoverHealth > characters.maxHealth)
+                    if (characters.maxHealth + recoverHealth > characters.maxHealth)
                     {
                         characters.Health = characters.maxHealth;
                         Console.WriteLine($"휴식하여 {characters.maxHealth}만큼 회복되었습니다.");
@@ -464,9 +468,9 @@ namespace TRPG
         }
         public void GoToDungeon(Characters characters)
         {
-            Dungeon easyDungeon = new Dungeon(DungeonType.Easy, 15.0f,  characters, 1000); //던전객체 생성
-            Dungeon normalDungeon = new Dungeon(DungeonType.Normal, 25.0f,  characters, 1700);
-            Dungeon HardDungeon = new Dungeon(DungeonType.Hard, 50.0f, characters, 2500);
+            Dungeon easyDungeon = new Dungeon(DungeonType.Easy, 15,  characters, 1000); //던전객체 생성
+            Dungeon normalDungeon = new Dungeon(DungeonType.Normal, 25,  characters, 1700);
+            Dungeon HardDungeon = new Dungeon(DungeonType.Hard, 50, characters, 2500);
             Console.WriteLine("던전입장");
             Console.WriteLine("이곳에서 던전으로 들어가기 전 활동을 할 수 있습니다.");
             Console.WriteLine("\n1.이지모드 던전   | 방어력 15 이상 권장");
