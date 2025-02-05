@@ -26,9 +26,9 @@ namespace TRPG
             Program game = new Program(); // Program 인스턴스 생성
             game.Description(); //상점Main에서는 재귀함수를 통해서 출력하고 있기 때문에
                                 //Description이 한번만 호출될 수 있는 구간을 만들어서 입력
-            game.StartGame(); 
+            game.StartGame();
         }
-        void StartGame()
+        public void StartGame()
         {
             Console.Clear();
             Console.WriteLine("스파르타 던전에 오신 여러분 환영합니다.");
@@ -121,7 +121,6 @@ namespace TRPG
                     break;
                 case 5:
                     GoToDungeon(characters);
-                    
                     break;
                 default:
                     Console.WriteLine("잘못 입력하셨습니다. 다시 입력해주세요.");
@@ -226,7 +225,6 @@ namespace TRPG
                             Console.WriteLine($"{selectedItem.Name}을 구매하셨습니다.");
                             Thread.Sleep(500);
                             GoToShop(characters);
-
                         }
                         else
                         {
@@ -249,7 +247,6 @@ namespace TRPG
                 Console.WriteLine("상점-아이템");
                 Console.WriteLine("필요한 아이템을 얻을 수 있는 상점입니다.\n");
                 index = 1;
-
                 for (int i = 0; i < Items.Count; i++)
                 {
                     var item = Items[i];
@@ -313,7 +310,6 @@ namespace TRPG
             {
                 Console.WriteLine("\n아이템을 보유하고 있지 않습니다.");
             }
-
             Console.WriteLine("1.장착 관리 ");
             Console.WriteLine("0.나가기 \n");
             Console.WriteLine("원하시는 행동을 입력해주세요. ");
@@ -364,7 +360,6 @@ namespace TRPG
             {
                 var selectedItem = Items[selectedNumber - 1]; //index번호는 0부터 시작하므로
                                                               //내가 선택한 번호에서 -1을 하면 원하는 아이템과 index넘버 일치
-
                 if (selectedItem.isPurchased) // 먼저 구매된 아이템만 장착할 수 있도록
                 {
                     if (selectedItem.isEquipped) //장착 로직 구현
@@ -425,15 +420,20 @@ namespace TRPG
             }
             else if (actions == 1)  // 휴식버튼 클릭시 현재체력이 최대체력일 때 골드가 차감되지 않고 휴식되지 않기
                                     // 휴식버튼 클릭시 현재체력만큼 체력이 회복되고 골드가 차감되도록
-                                    // 
             {
                    characters.maxHealth = characters.Health + totalHealth;
-                if (characters.Health + recoverHealth >= characters.maxHealth) //최대체력을 만들기위한 변수 maxHealth가져오기
+                if (characters.Health + recoverHealth == characters.maxHealth) //최대체력을 만들기위한 변수 maxHealth가져오기
                 {
                     Console.WriteLine("현재 체력이 최대체력이므로 휴식할 수 없습니다.");
                     Thread.Sleep(500);
                     GoToRest(characters);
                 }
+                else if (characters.maxHealth - characters.Health <recoverHealth ) //최대체력을 만들기위한 변수 maxHealth가져오기
+                    {
+                        Console.WriteLine("현재 체력이 최대체력이므로 휴식할 수 없습니다.");
+                        Thread.Sleep(500);
+                        GoToRest(characters);
+                    }
                 if (characters.Gold < recoverGold)
                 {
                     Console.WriteLine("Gold가 부족하여 휴식할 수 없습니다. Gold를 획득 후 다시 방문해주세요.");
@@ -443,16 +443,16 @@ namespace TRPG
                 if (characters.Gold >= recoverGold)
                 {
                     characters.Gold -= 500;
-                    if (characters.maxHealth + recoverHealth > characters.maxHealth)
+                    if (characters.Health + recoverHealth > characters.maxHealth)
                     {
-                        characters.Health = characters.maxHealth;
+                        characters.maxHealth = characters.maxHealth;
                         Console.WriteLine($"휴식하여 {characters.maxHealth}만큼 회복되었습니다.");
                         Thread.Sleep(500);
                         GoToRest(characters);
                     }
                     else
                     {
-                        characters.Health = characters.Health + 100;
+                        characters.maxHealth = characters.Health + 100;
                         Console.WriteLine($"휴식하여 {recoverHealth}만큼 체력이 회복되었습니다.");
                         Thread.Sleep(500);
                         GoToRest(characters);
@@ -468,14 +468,14 @@ namespace TRPG
         }
         public void GoToDungeon(Characters characters)
         {
-            Dungeon easyDungeon = new Dungeon(DungeonType.Easy, 15,  characters, 1000); //던전객체 생성
-            Dungeon normalDungeon = new Dungeon(DungeonType.Normal, 25,  characters, 1700);
-            Dungeon HardDungeon = new Dungeon(DungeonType.Hard, 50, characters, 2500);
+            Dungeon easyDungeon = new Dungeon(DungeonType.Easy, 25,  characters, 1000); //던전객체 생성
+            Dungeon normalDungeon = new Dungeon(DungeonType.Normal, 50,  characters, 1700);
+            Dungeon HardDungeon = new Dungeon(DungeonType.Hard, 70, characters, 2500);
             Console.WriteLine("던전입장");
             Console.WriteLine("이곳에서 던전으로 들어가기 전 활동을 할 수 있습니다.");
-            Console.WriteLine("\n1.이지모드 던전   | 방어력 15 이상 권장");
-            Console.WriteLine("2.노말모드 던전   | 방어력 25 이상 권장");
-            Console.WriteLine("3.하드모드 던전   | 방어력 50 이상 권장");
+            Console.WriteLine($"\n1.이지모드 던전   | 방어력 {easyDungeon.RecommendedArmor} 이상 권장");
+            Console.WriteLine($"2.노말모드 던전   | 방어력 {normalDungeon.RecommendedArmor} 이상 권장");
+            Console.WriteLine($"3.하드모드 던전   | 방어력 {HardDungeon.RecommendedArmor} 이상 권장");
             Console.WriteLine("\n0.나가기\n");
             Console.WriteLine("원하시는 행동을 입력해주세요 ");
             Console.Write(">>>>> ");
@@ -487,7 +487,7 @@ namespace TRPG
                     break;
                 case 1:
                     Console.WriteLine($"Easy모드에 도전합니다.");
-                    easyDungeon.AttemptDungeon();
+                    easyDungeon.AttemptDungeon(this);
                     Console.WriteLine("\n0.나가기\n");
                     Console.WriteLine("원하시는 행동을 입력해주세요 ");
                     Console.Write(">>>>> ");
@@ -503,7 +503,7 @@ namespace TRPG
                     break;
                 case 2:
                     Console.WriteLine("Normal모드에 도전합니다.");
-                    normalDungeon.AttemptDungeon();
+                    normalDungeon.AttemptDungeon(this);
                     Console.WriteLine("\n0.나가기\n");
                     Console.WriteLine("원하시는 행동을 입력해주세요 ");
                     Console.Write(">>>>> ");
@@ -519,7 +519,7 @@ namespace TRPG
                     break;
                 case 3:
                     Console.WriteLine("Hard모드에 도전합니다.");
-                    HardDungeon.AttemptDungeon();
+                    HardDungeon.AttemptDungeon(this);
                     Console.WriteLine("\n0.나가기\n");
                     Console.WriteLine("원하시는 행동을 입력해주세요 ");
                     Console.Write(">>>>> ");

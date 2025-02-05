@@ -28,7 +28,6 @@ namespace TRPG
             RecommendedArmor = recommendedArmor;
             ClearReward = clearReward;
             character = characters; //캐릭터를 받아오면서
-            bool IsClear = false;
             switch (type)
             {
                 case DungeonType.Easy:
@@ -42,29 +41,36 @@ namespace TRPG
                     break;
             }
         }
-        public void AttemptDungeon()
+        public void AttemptDungeon(Program program)
         {
             if (character.Armor < RecommendedArmor) //캐릭터 방어력이 요구되는 방어력보다 낮을 때
             {
                 Random random = new Random();  //클리어시 감소되는 체력 계산하기 20~35 기본 감소 랜덤값
-                int ArmorDifference = (int)(character.Armor - RecommendedArmor); // 유저방어력에 따른 체력감소값 정하기
-                int playerMinDamage = 20 - ArmorDifference;
-                int playerMaxDamage = 35 - ArmorDifference;
-                Damage = random.Next(playerMinDamage, playerMaxDamage);
-                if (!IsClear) //클리어시
+                if (random.Next(0, 101) < 41)  //40퍼센트로 맞추기 위해서 random을 1~100%이므로 맞추고
+                                               //그중 40퍼센트로 맞추기 위함.
                 {
+                    Console.WriteLine($"던전 클리어 실패ㅠㅠ 체력이 {Damage * 2}으로 감소합니다.");
+                    character.Health -= Damage * 2;
+                    if (character.maxHealth <= 0)
+                    {
+                        character.IsDie(program); //캐릭터가 데미지를 입을 때는 isDie함수를 호출하고
+                        return;                   // 그 값을 반환하도록 
+                    }
+                }
+                else //클리어시
+                {
+                    int ArmorDifference = (int)(character.Armor - RecommendedArmor); // 유저방어력에 따른 체력감소값 정하기
+                    int playerMinDamage = 20 - ArmorDifference;
+                    int playerMaxDamage = 35 - ArmorDifference;
+                    Damage = random.Next(playerMinDamage, playerMaxDamage);
                     character.Health -= Damage;
+                    if (character.maxHealth <= 0)
+                    {
+                        character.IsDie(program); 
+                        return;
+                    }
                     IsClear = true;
                     ClearDungeon();
-                }
-                else //클리어하지 못했을 때
-                {
-                    if (random.Next(0, 101) < 41)  //40퍼센트로 맞추기 위해서 random을 1~100%이므로 맞추고
-                                                   //그중 40퍼센트로 맞추기 위함.
-                    {
-                        Console.WriteLine($"던전 클리어 실패ㅠㅠ 체력이 {Damage * 2}으로 감소합니다.");
-                        character.Health -= Damage * 2;
-                    }
                 }
             }
             else  // 요구되는 방어력보다 높을 때
@@ -80,18 +86,23 @@ namespace TRPG
                 }
                 Damage = random.Next(playerMinDamage, playerMaxDamage);
                 character.Health -= Damage;
+                if (character.maxHealth <= 0)
+                { 
+                    character.IsDie(program); 
+                    return;
+                }
                 IsClear = true;
                 ClearDungeon();
             }
         }
-        public void ClearDungeon()
+        public void ClearDungeon() //던전 클리어시 
         {
             Console.Clear();
             Console.WriteLine("던전 클리어");
             Console.WriteLine("축하드립니다.");
             Console.WriteLine($"{type}던전을 클리어하셨습니다.");
             Console.WriteLine("\n[탐험 결과]");
-            Console.Write($"체력 {character.Health}이 {Damage*2}만큼 감소하였습니다. ");
+            Console.Write($"체력이 {Damage*2}만큼 감소하였습니다. ");
             Random random = new Random();
             int clearRewardPercentage = random.Next(1, 101);
             int additionalReward = (int)(ClearReward * (character.Attack * 2 / 100));
@@ -101,6 +112,7 @@ namespace TRPG
             Console.WriteLine($" {character.Gold} G");
             character.ClearCount++; // 레벨업을 위한 클리어횟수 카운트 증가
             character.LevelUp(); //레벨업 함수 실행을 통해 클리어횟수에 따른 Level증가 
+            
         }
     }
 }

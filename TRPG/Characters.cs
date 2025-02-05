@@ -5,6 +5,7 @@ namespace TRPG
 {
     internal class Characters
     {
+        private Program program; 
         private Item Item;
         public enum jobType { 전사, 궁수, 마법사 }
         public string Name { get; set; }
@@ -13,7 +14,7 @@ namespace TRPG
         public float Level { get; set; }
         public int Armor { get; set; }
         public int Gold { get; set; }
-        bool IsDead => Health <= 0;
+        bool IsDead { get; set; } = false;
         public jobType Job { get; set; }
         public int maxHealth { get; set; }
         public int ClearCount {  get; set; }
@@ -67,6 +68,14 @@ namespace TRPG
                                                                //캐릭터 생성시 매개변수로 이름과 직업을 선택하도록
         {
             return new Characters(name, job);
+        }
+        public void IsDie(Program program) //Program 객체를 매개변수로 받음
+        {
+            maxHealth = 0;
+            Console.WriteLine($"캐릭터의 체력이 {maxHealth}이 되어 죽었습니다. 게임을 다시 실행해주세요");
+            Console.WriteLine($"글자 아무거나 누르면 게임이 재시작됩니다.");
+            Console.ReadLine();
+            program.StartGame();
         }
     }
 }
