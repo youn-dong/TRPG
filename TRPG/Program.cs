@@ -90,9 +90,9 @@ namespace TRPG
         }
         public void SelectingBehaviour(Characters characters) //메인화면 구현
         {
-            Dungeon dungeon = new Dungeon(DungeonType.Easy, 15, characters, 1000); //던전 생성
-            Dungeon dungeon1 = new Dungeon(DungeonType.Normal, 25,characters, 1700);
-            Dungeon dungeon2 = new Dungeon(DungeonType.Hard, 50,characters, 2500);
+            Dungeon dungeon = new Dungeon(DungeonType.Easy, 25, characters, 1000); //던전 생성
+            Dungeon dungeon1 = new Dungeon(DungeonType.Normal, 50,characters, 1700);
+            Dungeon dungeon2 = new Dungeon(DungeonType.Hard, 70,characters, 2500);
             Console.Clear();
             Console.WriteLine("스파르타 던전마을에 오신 여러분 환영합니다.");
             Console.WriteLine("이곳에서 던전으로 들어가기전 활동을 할 수 있습니다. \n");
