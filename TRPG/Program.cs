@@ -186,24 +186,22 @@ namespace TRPG
             int index = 1;
             foreach (var item in Items)
             {
-
                 string priceShow = item.isPurchased ? "구매완료" : $"{item.Price} G";
                 Console.WriteLine($"{index}.{item.Name} |  공격력 + {item.Attack}  |  방어력 + {item.Armor}  |  체력 + {item.Health}  |  {item.ItemInfo}  |  {priceShow}");
                 index++;
-
             }
             Console.WriteLine("\n1.아이템 구매 ");
             Console.WriteLine("2.아이템 판매");
             Console.WriteLine("0.나가기 \n");
             Console.WriteLine("원하시는 행동을 입력해주세요. ");
             Console.Write(">>>>> ");
-            string? actions = Console.ReadLine();
-            if (actions == "0")
+            int actions =int.Parse(Console.ReadLine());
+            if (actions == 0)
             {
                 Console.Clear();
                 SelectingBehaviour(characters); //다시 나가기 로직
             }
-            else if (actions == "1")
+            else if (actions ==1)
             {
                 Console.WriteLine("구매하고 싶은 장비를 선택해주세요.");
                 int selectedNumber = int.Parse(Console.ReadLine()) - 1; //index는 0부터 시작하기 때문에
@@ -241,7 +239,7 @@ namespace TRPG
                     GoToShop(characters); // 상점 재진입
                 }
             }
-            else if (actions == "2")
+            else if (actions == 2)
             {
                 Console.Clear();
                 Console.WriteLine("상점-아이템");
@@ -420,7 +418,7 @@ namespace TRPG
                                       // 휴식버튼 클릭시 현재체력만큼 체력이 회복되고 골드가 차감되도록
             {
                 characters.maxHealth = characters.Health + totalHealth;
-                if (characters.Health + recoverHealth == characters.maxHealth) //최대체력을 만들기위한 변수 maxHealth가져오기
+                if (characters.Health + recoverHealth > characters.maxHealth) //최대체력을 만들기위한 변수 maxHealth가져오기
                 {
                     Console.WriteLine("현재 체력이 최대체력이므로 휴식할 수 없습니다.");
                     Thread.Sleep(500);
