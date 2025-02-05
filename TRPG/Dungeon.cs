@@ -112,7 +112,6 @@ namespace TRPG
             Console.WriteLine($" {character.Gold} G");
             character.ClearCount++; // 레벨업을 위한 클리어횟수 카운트 증가
             character.LevelUp(); //레벨업 함수 실행을 통해 클리어횟수에 따른 Level증가 
-            
         }
     }
 }

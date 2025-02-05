@@ -14,7 +14,6 @@ namespace TRPG
         public float Level { get; set; }
         public int Armor { get; set; }
         public int Gold { get; set; }
-        bool IsDead { get; set; } = false;
         public jobType Job { get; set; }
         public int maxHealth { get; set; }
         public int ClearCount {  get; set; }

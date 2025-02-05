@@ -171,9 +171,8 @@ namespace TRPG
             }
             
         }
-        public void GoToShop(Characters characters)
+        public void GoToShop(Characters characters) //상점이동시 시작화면 구현
         {
-            //상점이동시 시작화면 구현
             Console.Clear();
             Console.WriteLine("상점");
             Console.WriteLine("필요한 아이템을 얻을 수 있는 상점입니다.\n");
@@ -290,7 +289,7 @@ namespace TRPG
                 GoToShop(characters);
             }
         }
-        public void GoToInventory(Characters characters)
+        public void GoToInventory(Characters characters) //인벤토리 이동시 시작화면 구현
         {
             bool isOwnedItem = false; //소유중인 아이템을 bool값을 통해 선언
             Console.Clear();
@@ -466,9 +465,9 @@ namespace TRPG
                 GoToRest(characters);
             }
         }
-        public void GoToDungeon(Characters characters)
+        public void GoToDungeon(Characters characters) //던전입장 기능 구현
         {
-            Dungeon easyDungeon = new Dungeon(DungeonType.Easy, 25,  characters, 1000); //던전객체 생성
+            Dungeon easyDungeon = new Dungeon(DungeonType.Easy, 25,  characters, 1000); //던전객체 생성, 밸런스 조정을 위한 방어력 변경
             Dungeon normalDungeon = new Dungeon(DungeonType.Normal, 50,  characters, 1700);
             Dungeon HardDungeon = new Dungeon(DungeonType.Hard, 70, characters, 2500);
             Console.WriteLine("던전입장");
@@ -535,6 +534,5 @@ namespace TRPG
                     break;
             }
         }
-
     }
 }
